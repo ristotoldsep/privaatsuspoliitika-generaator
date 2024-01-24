@@ -1,5 +1,8 @@
 // src/Form.js
 import { useState } from "react";
+import TextTemplate from "../text-template/TextTemplate";
+
+import { renderToStaticMarkup } from "react-dom/server"; 
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -22,96 +25,112 @@ const Form = () => {
     e.preventDefault();
 
     // Generate the text
-    const text = `${formData.name} jaoks on oluline Teie privaatsus ja järgida kõiki kehtivaid seadusi ja määrusi mis tahes isikuandmete kohta, mida võime Teie kohta koguda, kui külastate meie veebilehte ${formData.website}. ...`;
+    const jsxContent = TextTemplate(formData);
+
+    // Convert the JSX to a string using renderToStaticMarkup
+    const textString = renderToStaticMarkup(jsxContent);
+
+    console.log(textString);
 
     // Set the generated text and show it
-    setGeneratedText(text);
+    setGeneratedText(textString);
     setShowGeneratedText(true);
   };
 
   const handleCopyClick = () => {
-    // Create a textarea element to copy text to clipboard
-    const textarea = document.createElement("textarea");
-    textarea.value = generatedText;
+    // Check if the Clipboard API is supported
+    if (navigator.clipboard) {
+      // Use the Clipboard API to copy text to clipboard
+      navigator.clipboard.writeText(generatedText)
+        .then(() => {
+          // Successfully copied
+          alert("Text copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Unable to copy text to clipboard:", error);
+        });
+    } else {
+      // Fallback to execCommand for browsers that do not support the Clipboard API
+      const textarea = document.createElement("textarea");
+      textarea.value = generatedText;
 
-    // Make the textarea invisible and append it to the document
-    textarea.style.position = "absolute";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
+      // Make the textarea invisible and append it to the document
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
 
-    // Select and copy text to clipboard
-    textarea.select();
-    document.execCommand("copy");
+      // Select and copy text to clipboard
+      textarea.select();
+      document.execCommand("copy");
 
-    // Remove the textarea from the document
-    document.body.removeChild(textarea);
+      // Remove the textarea from the document
+      document.body.removeChild(textarea);
 
-    // Optionally, provide feedback to the user (e.g., toast message)
-    alert("Text copied to clipboard!");
+      // Provide feedback to the user
+      alert("Privaatsuspoliitika kopeeritud!");
+    }
   };
 
   return (
     <>
-    
-    <form className="form" onSubmit={handleSubmit}>
-      <label htmlFor="name">Name:</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        value={formData.name}
-        onChange={handleInputChange}
-      />
+      <h2>Sisesta ettevõtte andmed</h2>
 
-      <label htmlFor="website">Web Address:</label>
-      <input
-        type="text"
-        id="website"
-        name="website"
-        value={formData.website}
-        onChange={handleInputChange}
-      />
+      <form className="form" onSubmit={handleSubmit}>
+        <label htmlFor="name">Ettevõtte nimi</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={handleInputChange}
+        />
 
-      <label htmlFor="companyNumber">Company Number:</label>
-      <input
-        type="text"
-        id="companyNumber"
-        name="companyNumber"
-        value={formData.companyNumber}
-        onChange={handleInputChange}
-      />
+        <label htmlFor="website">Ettevõtte veebiaadress</label>
+        <input
+          type="text"
+          id="website"
+          name="website"
+          value={formData.website}
+          onChange={handleInputChange}
+        />
 
-      <label htmlFor="email">Email:</label>
-      <input
-        type="text"
-        id="email"
-        name="email"
-        value={formData.email}
-        onChange={handleInputChange}
-      />
+        <label htmlFor="companyNumber">Ettevõtte registreerimisnumber</label>
+        <input
+          type="text"
+          id="companyNumber"
+          name="companyNumber"
+          value={formData.companyNumber}
+          onChange={handleInputChange}
+        />
 
-      <label htmlFor="phone">Phone Number:</label>
-      <input
-        type="text"
-        id="phone"
-        name="phone"
-        value={formData.phone}
-        onChange={handleInputChange}
-      />
+        <label htmlFor="email">Ettevõtte e-posti aadress*:</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+        />
 
-      <button type="submit">Submit</button>
-    </form>
+        <label htmlFor="phone">Ettevõtte telefoni number</label>
+        <input
+          type="text"
+          id="phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+        />
 
-    {/* Display generated text if showGeneratedText is true */}
-    {showGeneratedText && (
-        <div className="generated-text">
-            <button onClick={handleCopyClick}>Kopeeri</button>
-            <h3>Generated Text:</h3>
-            <p>{generatedText}</p>
-            {/* Button to copy generated text */}
-        </div>
+        <button type="submit">Genereeri</button>
+      </form>
+
+      {/* Display generated text if showGeneratedText is true */}
+      {showGeneratedText && (
+          <div className="generated-text-container">
+            <button className="kopeeri_btn" onClick={handleCopyClick}>Kopeeri</button>
+            <div className="generated-text" dangerouslySetInnerHTML={{ __html: generatedText }}></div>
+          </div>
       )}
-
     </>
   );
 };
