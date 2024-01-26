@@ -1,7 +1,11 @@
 import { Fragment } from "react";
 
-const TextTemplate = (formData) => {
+const TextTemplate = (formData, selectedCheckboxes) => {
   const { name, website, companyNumber, phone, email } = formData;
+
+  console.log("DATAAAA", selectedCheckboxes);
+
+  const isNameSelected = selectedCheckboxes.includes('name');
 
    // Function to format the date as DD.MM.YYYY
     const formatDate = () => {
@@ -21,6 +25,7 @@ const TextTemplate = (formData) => {
 
   return (
     <Fragment>
+      {isNameSelected && <h2>JOU RIX</h2>}
       <p>
         {name} jaoks on oluline Teie privaatsus ja järgida kõiki kehtivaid
         seadusi ja määrusi mis tahes isikuandmete kohta, mida võime Teie kohta
