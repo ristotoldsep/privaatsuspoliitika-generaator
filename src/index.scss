@@ -70,7 +70,7 @@ body {
     color: #fff;
     position: relative;
     background: linear-gradient(0deg, black, #444444);
-    min-height: 681px;
+    min-height: 700px;
     
     &::before{
       content: '';
@@ -217,7 +217,7 @@ body {
       }
 
       &:active {
-        color: #ffffffcc;
+        color: #000000aa;
       }
     
       &:hover {

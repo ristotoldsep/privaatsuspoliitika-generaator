@@ -1,8 +1,11 @@
-// src/Form.js
 import { useState } from "react";
 import TextTemplate from "../text-template/TextTemplate";
+import GeneratedTextContainer from "../generated-text/generated-text.component";
 
-import { renderToStaticMarkup } from "react-dom/server"; 
+import { renderToStaticMarkup } from "react-dom/server";
+import Input from "./input/input.component";
+import Checkbox from "./checkbox/checkbox.component";
+import Button from "./button/button.component";
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -16,8 +19,8 @@ const Form = () => {
   const [generatedText, setGeneratedText] = useState("");
   const [showGeneratedText, setShowGeneratedText] = useState(false);
 
-   // State for tracking errors
-   const [errors, setErrors] = useState({
+  // State for tracking errors
+  const [errors, setErrors] = useState({
     name: false,
     website: false,
     email: false,
@@ -52,7 +55,16 @@ const Form = () => {
       setSelectedCheckboxes([]);
     } else {
       // Add logic to get all checkbox values (e.g., ["name", "email", "isikukood"])
-      const allCheckboxValues = ["name", "email", "isikukood", "telefoninumber", "aadress", "vestlusajalugu", "brauseriipinfo", "referauthor"];
+      const allCheckboxValues = [
+        "name",
+        "email",
+        "isikukood",
+        "telefoninumber",
+        "aadress",
+        "vestlusajalugu",
+        "brauseriipinfo",
+        "referauthor",
+      ];
       setSelectedCheckboxes(allCheckboxValues);
     }
 
@@ -104,13 +116,14 @@ const Form = () => {
     // Check if the Clipboard API is supported
     if (navigator.clipboard) {
       // Use the Clipboard API to copy text to clipboard
-      navigator.clipboard.writeText(generatedText)
+      navigator.clipboard
+        .writeText(generatedText)
         .then(() => {
           // Successfully copied
-          alert("Text copied to clipboard!");
+          alert("Privaatsuspoliitika kopeeritud!");
         })
         .catch((error) => {
-          console.error("Unable to copy text to clipboard:", error);
+          console.error("Teksti kopeerimine ebaõnnestus:", error);
         });
     } else {
       // Fallback to execCommand for browsers that do not support the Clipboard API
@@ -137,269 +150,163 @@ const Form = () => {
   return (
     <>
       <div className="form-container">
-
         {formStep === 1 && (
           <>
             <form className="form" onSubmit={handleSubmit}>
-
               <h2>Sisesta ettevõtte andmed</h2>
 
-              <label htmlFor="name">Ettevõtte nimi *</label>
-              <input
-                type="text"
+              <Input
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
+                error={errors.name ? "Sisesta ettevõtte nimi" : ""}
+                label="Ettevõtte nimi *"
               />
-              {errors.name && <div className="error-message">Sisesta ettevõtte nimi</div>}
 
-              <label htmlFor="website">Ettevõtte veebiaadress *</label>
-              <input
-                type="text"
+              <Input
                 id="website"
                 name="website"
                 value={formData.website}
                 onChange={handleInputChange}
+                error={errors.website ? "Sisesta ettevõtte veebiaadress" : ""}
+                label="Ettevõtte veebiaadress *"
               />
-              {errors.website && <div className="error-message">Sisesta ettevõtte veebiaadress</div>}
 
-              <label htmlFor="companyNumber">Ettevõtte registreerimisnumber</label>
-              <input
-                type="text"
+              <Input
                 id="companyNumber"
                 name="companyNumber"
                 value={formData.companyNumber}
                 onChange={handleInputChange}
+                label="Ettevõtte registreerimisnumber"
               />
 
-              <label htmlFor="email">Ettevõtte e-posti aadress *</label>
-              <input
-                type="text"
+              <Input
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                error={errors.email ? "Sisesta ettevõtte email" : ""}
+                label="Ettevõtte e-posti aadress *"
+                type="email"
               />
-              {errors.email && <div className="error-message">Sisesta ettevõtte email</div>}
 
-              <label htmlFor="phone">Ettevõtte telefoni number</label>
-              <input
-                type="text"
+              <Input
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
+                label="Ettevõtte telefoni number"
               />
 
               <div className="buttons_container">
-                <button className="submit_btn" type="submit">Edasi</button>
+                <button className="submit_btn" type="submit">
+                  Edasi
+                </button>
               </div>
-              
             </form>
-
           </>
         )}
 
         {formStep === 2 && (
           <>
             <form className="form">
-
               <h2>Märgi, milliseid andmeid kogute</h2>
 
-              <div className="checkbox-wrapper selectAll">
-                <label className="checkbox" htmlFor="selectAllCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox" 
-                    id="selectAllCheckbox"
-                    checked={selectAllChecked}
-                    onChange={handleSelectAllChange}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Märgi kõik</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="nameCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="nameCheckbox"
-                    value="name"
-                    checked={selectedCheckboxes.includes("name")}
-                    onChange={() => handleCheckboxChange("name")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Ees- ja perekonnanimi</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="emailCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="emailCheckbox"
-                    value="email"
-                    checked={selectedCheckboxes.includes("email")}
-                    onChange={() => handleCheckboxChange("email")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">E-posti aadress</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="isikukoodCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="isikukoodCheckbox"
-                    value="isikukood"
-                    checked={selectedCheckboxes.includes("isikukood")}
-                    onChange={() => handleCheckboxChange("isikukood")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Isikukood</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="telefoninumberCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="telefoninumberCheckbox"
-                    value="telefoninumber"
-                    checked={selectedCheckboxes.includes("telefoninumber")}
-                    onChange={() => handleCheckboxChange("telefoninumber")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Telefoninumber</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="aadressCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="aadressCheckbox"
-                    value="aadress"
-                    checked={selectedCheckboxes.includes("aadress")}
-                    onChange={() => handleCheckboxChange("aadress")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Postiaadress, riik, maakond, linn</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="vestlusajaluguCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="vestlusajaluguCheckbox"
-                    value="vestlusajalugu"
-                    checked={selectedCheckboxes.includes("vestlusajalugu")}
-                    onChange={() => handleCheckboxChange("vestlusajalugu")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Vestlusajalugu kliendiga</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper">
-                <label className="checkbox" htmlFor="brauseriipinfoCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="brauseriipinfoCheckbox"
-                    value="brauseriipinfo"
-                    checked={selectedCheckboxes.includes("brauseriipinfo")}
-                    onChange={() => handleCheckboxChange("brauseriipinfo")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Informatsioon kliendi veebibrauseri ja IP-aadressi kohta</p>
-                </label>
-              </div>
-              
-              <div className="checkbox-wrapper referauthor">
-                <label className="checkbox" htmlFor="referauthorCheckbox">
-                  <input 
-                    className="checkbox__trigger visuallyhidden" 
-                    type="checkbox"
-                    id="referauthorCheckbox"
-                    value="referauthor"
-                    checked={selectedCheckboxes.includes("referauthor")}
-                    onChange={() => handleCheckboxChange("referauthor")}
-                  />
-                  <span className="checkbox__symbol">
-                    <svg aria-hidden="true" className="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 14l8 7L24 7"></path>
-                    </svg>
-                  </span>
-                  <p className="checkbox__textwrapper">Viita vDisaini privaatsuspoliitika generaatorile :&#41;</p>
-                </label>
-              </div>
+              <Checkbox
+                id="selectAllCheckbox"
+                checked={selectAllChecked}
+                onChange={handleSelectAllChange}
+                label="Märgi kõik"
+                wrapperClass="selectAll"
+              />
+
+              <Checkbox
+                id="nameCheckbox"
+                checked={selectedCheckboxes.includes("name")}
+                onChange={() => handleCheckboxChange("name")}
+                label="Ees- ja perekonnanimi"
+              />
+
+              <Checkbox
+                id="emailCheckbox"
+                checked={selectedCheckboxes.includes("email")}
+                onChange={() => handleCheckboxChange("email")}
+                label="E-posti aadress"
+              />
+
+              <Checkbox
+                id="isikukoodCheckbox"
+                checked={selectedCheckboxes.includes("isikukood")}
+                onChange={() => handleCheckboxChange("isikukood")}
+                label="Isikukood"
+              />
+
+              <Checkbox
+                id="telefoninumberCheckbox"
+                checked={selectedCheckboxes.includes("telefoninumber")}
+                onChange={() => handleCheckboxChange("telefoninumber")}
+                label="Telefoninumber"
+              />
+
+              <Checkbox
+                id="aadressCheckbox"
+                checked={selectedCheckboxes.includes("aadress")}
+                onChange={() => handleCheckboxChange("aadress")}
+                label="Postiaadress, riik, maakond, linn"
+              />
+
+              <Checkbox
+                id="vestlusajaluguCheckbox"
+                checked={selectedCheckboxes.includes("vestlusajalugu")}
+                onChange={() => handleCheckboxChange("vestlusajalugu")}
+                label="Vestlusajalugu kliendiga"
+              />
+
+              <Checkbox
+                id="brauseriipinfoCheckbox"
+                checked={selectedCheckboxes.includes("brauseriipinfo")}
+                onChange={() => handleCheckboxChange("brauseriipinfo")}
+                label="Informatsioon kliendi veebibrauseri ja IP-aadressi kohta"
+              />
+
+              <Checkbox
+                id="referauthorCheckbox"
+                checked={selectedCheckboxes.includes("referauthor")}
+                onChange={() => handleCheckboxChange("referauthor")}
+                label="Viita vDisaini privaatsuspoliitika generaatorile :)"
+                wrapperClass="referauthor"
+              />
 
               <div className="buttons_container">
-                <button className="back_btn" type="button" onClick={handleBackClick}>
+                <Button
+                  className="back_btn"
+                  type="button"
+                  onClick={handleBackClick}
+                >
                   Tagasi
-                </button>
-                <button className="submit_btn" type="submit" onClick={handleSubmit}>
-                  Genereeri
-                </button>
-              </div>
+                </Button>
 
+                <Button
+                  className="submit_btn"
+                  type="submit"
+                  onClick={handleSubmit}
+                >
+                  Genereeri
+                </Button>
+              </div>
             </form>
           </>
         )}
-
       </div>
 
       {/* Display generated text if showGeneratedText is true */}
       {showGeneratedText && (
-          <div className="generated-text-container">
-            <button className="kopeeri_btn" onClick={handleCopyClick}>Kopeeri</button>
-            <div className="generated-text" dangerouslySetInnerHTML={{ __html: generatedText }}></div>
-          </div>
+        <GeneratedTextContainer
+          generatedText={generatedText}
+          handleCopyClick={handleCopyClick}
+        />
       )}
-    
     </>
   );
 };

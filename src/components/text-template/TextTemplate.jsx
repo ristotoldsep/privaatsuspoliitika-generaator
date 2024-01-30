@@ -6,6 +6,13 @@ const TextTemplate = (formData, selectedCheckboxes) => {
   console.log("DATAAAA", selectedCheckboxes);
 
   const isNameSelected = selectedCheckboxes.includes('name');
+  const isEmailSelected = selectedCheckboxes.includes('email');
+  const isIsikukoodSelected = selectedCheckboxes.includes('isikukood');
+  const isTelefonSelected = selectedCheckboxes.includes('telefoninumber');
+  const isAadressSelected = selectedCheckboxes.includes('aadress');
+  const isVestlusajaluguSelected = selectedCheckboxes.includes('vestlusajalugu');
+  const isBrauseriIpInfoSelected = selectedCheckboxes.includes('brauseriipinfo');
+  const isReferAuthorSelected = selectedCheckboxes.includes('referauthor');
 
    // Function to format the date as DD.MM.YYYY
     const formatDate = () => {
@@ -378,12 +385,15 @@ const TextTemplate = (formData, selectedCheckboxes) => {
       <br />
       <p>Viimati muudetud {lastModified}</p>
       <br />
-      <p>
-        See dokument on koostatud{" "}
-        <a href="https://vdisain.ee">
-          vDisain privaatsuspoliitika generaatoriga
-        </a>
-      </p>
+      {isReferAuthorSelected && (
+        <p>
+          See dokument on koostatud{" "}
+          <a href="https://vdisain.ee">
+            vDisain privaatsuspoliitika generaatoriga
+          </a>
+        </p>
+      )}
+      
     </Fragment>
   );
 };
