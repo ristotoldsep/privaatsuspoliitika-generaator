@@ -32,7 +32,6 @@ const TextTemplate = (formData, selectedCheckboxes) => {
 
   return (
     <Fragment>
-      {isNameSelected && <h2>JOU RIX</h2>}
       <p>
         {name} jaoks on oluline Teie privaatsus ja järgida kõiki kehtivaid
         seadusi ja määrusi mis tahes isikuandmete kohta, mida võime Teie kohta
@@ -48,7 +47,7 @@ const TextTemplate = (formData, selectedCheckboxes) => {
         külastajatele ning ei rakendu andmetele, mida kogutakse muude kanalite
         kaudu.
       </p>
-      <p>Teie andmete töötleja on RIX OÜ </p>
+      <p>Teie andmete töötleja on {name}</p>
       <p>ettevõtte reg. number: {companyNumber}</p>
       <p>e-post: {email} </p>
       <p>telefoninumber: {phone} </p>
